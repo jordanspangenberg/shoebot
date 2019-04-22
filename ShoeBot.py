@@ -4,21 +4,26 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
 
-
-def availabilityCheck(productName):
+def getCatalog():
     base_url = 'https://feature.com/products/'
 
     i = 1
 
     while True:
-        r = requests.get(base_url + '.json?page={}').format(i)
+        getUrl = ('https://feature.com/products.json?page={}').format(i)
+        r = requests.get(getUrl)
         products = json.loads(r.text)["products"]
 
         for product in products:
             print(product['title'])
             productName = product['title']
+        i = i + 1
+        productCatalog = []
+        productCatalog.append(products)
+        if not products:
+            return productCatalog
             
-            
+"""             
             if productName == productName:
                 #print(productName)
                 theShoe = product
@@ -28,6 +33,10 @@ def availabilityCheck(productName):
                 return productUrl
             
         return False
+ """
+
+def availabilityCheck(productName):
+    pass
 
 
 def buyProduct(url, size):
@@ -66,8 +75,11 @@ def buyProduct(url, size):
     driver.find_element_by_xpath('//input[@id="checkout_shipping_address_phone"]').send_keys('5417202859' + u'\ue007')
 
 if __name__ == '__main__':
+    getCatalog()
+""" 
     myUrl = availabilityCheck()
     if myUrl != False:
         buyProduct()
     else:
         print("Product is not available")
+ """
