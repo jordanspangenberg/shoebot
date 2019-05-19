@@ -2,38 +2,48 @@ import requests
 import json
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+import datetime
 import time
 
 def getCatalog():
     base_url = 'https://feature.com/products/'
 
     i = 1
+    productCatalog = []
 
     while True:
-        getUrl = ('https://feature.com/products.json?page={}').format(i)
+        getUrl = ('https://feature.com/collections/footwear/products.json?page={}').format(i)
         r = requests.get(getUrl)
         products = json.loads(r.text)["products"]
 
-        for product in products:
-            print(product['title'])
-            productName = product['title']
-        i = i + 1
-        productCatalog = []
-        productCatalog.append(products)
-        if not products:
+        if products:
+            for product in products:
+                print(product['title'])
+                productName = product['title']
+            i = i + 1
+            productCatalog.append(products)
+        else:
+            now = datetime.datetime.now()
+            with open('{}-feature.json'.format(now.strftime('%m-%d-%y-%H-%M-%S')), 'w') as outfile:
+                json.dump(productCatalog, outfile)
             return productCatalog
-            
-"""             
-            if productName == productName:
-                #print(productName)
-                theShoe = product
-                #print(theShoe) 
-                productHandle = product['handle']
-                productUrl = base_url + productHandle
-                return productUrl
-            
+
+def checkAvailability(fileName, searchTerm):
+    base_url = 'https://feature.com/products/'
+    with open(fileName) as infile:
+
+        productCatalog = json.load(infile)
+        for page in productCatalog:
+            for product in page:
+                productName = product['title']
+                print(productName)
+                if productName == searchTerm:
+                    theShoe = product
+                    productHandle = product['handle']
+                    productUrl = base_url + productHandle
+                    return productUrl
+                
         return False
- """
 
 def availabilityCheck(productName):
     pass
@@ -75,7 +85,10 @@ def buyProduct(url, size):
     driver.find_element_by_xpath('//input[@id="checkout_shipping_address_phone"]').send_keys('5417202859' + u'\ue007')
 
 if __name__ == '__main__':
-    getCatalog()
+    #productCatalog = getCatalog()
+    print(checkAvailability(
+        fileName="C:/Users/Jordan/shoebot/04-22-19-18-13-08-feature.json", 
+        searchTerm="Adidas Originals x White Mountaineering Superstar - Core Black/Grey" ))
 """ 
     myUrl = availabilityCheck()
     if myUrl != False:
